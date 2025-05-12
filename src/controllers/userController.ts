@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
+//import { supabase } from '../config/supabaseClient';
 
-export async function getUsers(_req: Request, res: Response) {
+export async function createUser(_req: Request, res: Response) {
   try {
     res.json({ message: 'Hello from getUsers!' });
   } catch (error) {
