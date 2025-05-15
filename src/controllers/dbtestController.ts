@@ -7,10 +7,7 @@ export async function testDBConnection(
   next?: NextFunction
 ): Promise<void> {
   try {
-    const { data, error } = await supabase
-      .from('Users')
-      .select('*')
-      .limit(1);
+    const { data, error } = await supabase.from('Users').select('*').limit(1);
 
     if (error) {
       console.error('❌ Supabase error:', error);
