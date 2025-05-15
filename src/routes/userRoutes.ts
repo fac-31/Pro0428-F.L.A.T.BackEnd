@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
 
-import { getUsers } from '../controllers/userController.ts';
+import { createUser } from '../controllers/userController.ts';
 
-router.get('/', getUsers);
+router.get('/create-user', createUser);
 
 export { router as userRoutes };
