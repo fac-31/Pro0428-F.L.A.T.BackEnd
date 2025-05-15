@@ -1,10 +1,8 @@
-import express from 'express';
-import cors from 'cors';
-
 import dotenv from 'dotenv';
 dotenv.config();
 
-const app = express();
+import app from './app';
+
 const PORT = 5000;
 
 app.listen(PORT, () => {
