@@ -1,14 +1,21 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 
-export async function createUser(req: Request, res: Response) {
-  const { name, email } = req.body;
+export async function createUser(req: Request, res: Response, next?: NextFunction): Promise<void> {
+  try {
+    const { name, email } = req.body;
 
-  const { data, error } = await supabase.from('Users').insert([{ name, email }]).select();
+    const { data, error } = await supabase.from('Users').insert([{ name, email }]).select();
 
-  if (error) {
-    console.error('Supabase insert error:', error);
-    return res.status(500).json({ error: 'Failed to create user' });
+    if (error) {
+      console.error('❌ Supabase insert error:', error);
+      res.status(500).json({ success: false, error: error.message });
+      return;
+    }
+
+    res.status(201).json({ success: true, data });
+  } catch (err) {
+    next?.(err);
   }
 
   res.status(201).json(data);
