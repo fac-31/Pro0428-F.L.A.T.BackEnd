@@ -12,7 +12,7 @@ app = FastAPI()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Add your frontend URL
+    allow_origins=["http://localhost:3000"],  # Add frontend URL later!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,10 +44,8 @@ def run_in_thread(messages):
 @app.post("/api/welcome")
 async def welcome_chat(request: ChatRequest):
     try:
-        # Convert messages to the format expected by run_welcome_conversation
         messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
         
-        # Run the sync code in a thread pool
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(
             thread_pool,
@@ -59,7 +57,6 @@ async def welcome_chat(request: ChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 def update_in_thread(messages):
-    # Create a new event loop for this thread
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -70,10 +67,8 @@ def update_in_thread(messages):
 @app.post("/api/preferences")
 async def update_preferences(request: ChatRequest):
     try:
-        # Convert messages to the format expected by update_house_preferences
         messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
         
-        # Run the sync code in a thread pool
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(
             thread_pool,
