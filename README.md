@@ -19,10 +19,17 @@ A backend service for the F.L.A.T application, combining Node.js/Express with Py
 │   ├── services/         # Node.js services
 │   │   └── pythonService.ts  # Python service integration
 │   ├── test/            # Test files
-│   │   └── servers.test.ts  # Server health check tests
-│   └── server.ts         # Express server
-├── package.json          # Node.js dependencies
-└── requirements.txt      # Python dependencies
+│   │   └── servers.test.ts  # Servers health check tests
+│   ├── routes/          # Express route definitions
+│   │   ├── ...
+│   ├── controllers/     # Route controllers
+│   │   ├── ...
+│   ├── config/         # Database Configuration files
+│   │   └── supabaseClient.ts
+│   ├── app.ts          # Express app configuration
+│   └── server.ts       # Express server entry point
+├── package.json        # Node.js dependencies
+└── requirements.txt    # Python dependencies
 ```
 
 ## Setup
@@ -48,8 +55,13 @@ This will automatically:
 3. Create a `.env` file in the root directory:
 
 ```env
+# OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
 PYTHON_API_URL=http://localhost:8000
+
+# Supabase Configuration
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ## Running the Application
@@ -93,6 +105,18 @@ The test results will show:
 - A summary of the overall test status
 
 ## API Endpoints
+
+### Node.js Express Server (Port 5000)
+
+- `GET /api/test-db` - Test database connection
+- `GET /users/:id` - Get user by ID
+- `GET /users/create-user` - Create new user
+- `GET /tenures/create-tenure` - Create new tenure
+- `GET /houses/create-house` - Create new house
+- `GET /bills/create-bill` - Create new bill
+- `GET /contentedness/create-contentedness` - Create new contentedness entry
+- `GET /cleaning/create-cleaning` - Create new cleaning entry
+- `GET /emails/create-email` - Create new email
 
 ### Python FastAPI Server (Port 8000)
 
@@ -141,3 +165,9 @@ pip install -r requirements.txt
 - Verify Python and pip are installed
 - Check that all Python dependencies are installed
 - Ensure the OPENAI_API_KEY is set in your environment
+
+4. If database connection fails:
+
+- Verify Supabase credentials are correctly set in `.env`
+- Check that the Supabase project is active
+- Ensure the database tables are properly set up

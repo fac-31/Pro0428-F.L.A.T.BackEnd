@@ -50,31 +50,50 @@ Format your responses in a clear, structured way that can be easily referenced b
 """
 )
 
-welcome_chat_history = [{"role": "user", "content": "Hi! I'm moving in this week."}]
+# Initialize conversation histories
+welcome_chat_history = []
 house_preferences_history = []
 
-def run_welcome_conversation():
-    while True:
+# Function to handle the welcome conversation and get preferences
+def run_welcome_conversation(messages=None):
+    if messages is None:
+        # Interactive mode
+        welcome_chat_history.append({"role": "user", "content": "Hi! I'm moving in this week."})
+        while True:
+            result = Runner.run_sync(welcome_agent, welcome_chat_history)
+            assistant_reply = result.final_output.strip()
+            print(f"\n{welcome_agent.name}: {assistant_reply}")
+
+            if "summary" in assistant_reply.lower() or "all set" in assistant_reply.lower() or "welcome again" in assistant_reply.lower():
+                return assistant_reply  # Return the final summary
+
+            user_input = input("\nYou: ").strip()
+            welcome_chat_history.append({"role": "assistant", "content": assistant_reply})
+            welcome_chat_history.append({"role": "user", "content": user_input})
+    else:
+        # Server mode
+        welcome_chat_history.extend(messages)
         result = Runner.run_sync(welcome_agent, welcome_chat_history)
-        assistant_reply = result.final_output.strip()
-        print(f"\n{welcome_agent.name}: {assistant_reply}")
+        return result.final_output.strip()
 
-        if "summary" in assistant_reply.lower() or "all set" in assistant_reply.lower() or "welcome again" in assistant_reply.lower():
-            return assistant_reply  
-
-        user_input = input("\nYou: ").strip()
-        welcome_chat_history.append({"role": "assistant", "content": assistant_reply})
-        welcome_chat_history.append({"role": "user", "content": user_input})
-
-def update_house_preferences(new_preferences):
-    house_preferences_history.append({
-        "role": "user",
-        "content": f"New housemate preferences to integrate:\n{new_preferences}"
-    })
+# Function to update house preferences
+def update_house_preferences(messages=None):
+    if messages is None:
+        # Interactive mode
+        print("\nUpdating house preferences...")
+        house_preferences_history.append({
+            "role": "user",
+            "content": "New housemate preferences to integrate:\n" + welcome_chat_history[-1]["content"]
+        })
+    else:
+        # Server mode
+        house_preferences_history.extend(messages)
     
+    # Get updated house preferences
     result = Runner.run_sync(house_preferences_agent, house_preferences_history)
     updated_preferences = result.final_output.strip()
     
+    # Store the response in history
     house_preferences_history.append({
         "role": "assistant",
         "content": updated_preferences
@@ -82,14 +101,16 @@ def update_house_preferences(new_preferences):
     
     return updated_preferences
 
-print("Welcome to your new F.L.A.T system! Designed to take the stress out of living with housemates.")
-print("Let's find out what you're like... and how you like to live.")
-
-# Get preferences from new housemate
-new_preferences = run_welcome_conversation()
-
-# Update house preferences
-print("\nUpdating house preferences...")
-updated_preferences = update_house_preferences(new_preferences)
-print("\nUpdated House Preferences:")
-print(updated_preferences)
+# Only run interactive mode if this file is run directly
+if __name__ == "__main__":
+    print("Welcome to your new F.L.A.T system! Designed to take the stress out of living with housemates.")
+    print("Let's start by collecting your preferences...")
+    
+    # Get preferences from new housemate
+    new_preferences = run_welcome_conversation()
+    
+    # Update house preferences
+    print("\nUpdating house preferences...")
+    updated_preferences = update_house_preferences()
+    print("\nUpdated House Preferences:")
+    print(updated_preferences)

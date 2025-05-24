@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import uvicorn
-from user_preferences import welcome_agent, house_preferences_agent, Runner
+from user_preferences import run_welcome_conversation, update_house_preferences
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 app = FastAPI()
 
@@ -16,6 +18,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Create a thread pool for running sync code
+thread_pool = ThreadPoolExecutor()
+
 class ChatMessage(BaseModel):
     role: str
     content: str
@@ -23,21 +28,62 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
 
+@app.get("/api/test")
+async def test_route():
+    return {"status": "ok", "message": "Python server is running!"}
+
+def run_in_thread(messages):
+    # Create a new event loop for this thread
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return run_welcome_conversation(messages)
+    finally:
+        loop.close()
+
 @app.post("/api/welcome")
 async def welcome_chat(request: ChatRequest):
     try:
-        result = Runner.run_sync(welcome_agent, [msg.dict() for msg in request.messages])
-        return {"response": result.final_output.strip()}
+        # Convert messages to the format expected by run_welcome_conversation
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+        
+        # Run the sync code in a thread pool
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            thread_pool,
+            run_in_thread,
+            messages
+        )
+        return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def update_in_thread(messages):
+    # Create a new event loop for this thread
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return update_house_preferences(messages)
+    finally:
+        loop.close()
 
 @app.post("/api/preferences")
 async def update_preferences(request: ChatRequest):
     try:
-        result = Runner.run_sync(house_preferences_agent, [msg.dict() for msg in request.messages])
-        return {"response": result.final_output.strip()}
+        # Convert messages to the format expected by update_house_preferences
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+        
+        # Run the sync code in a thread pool
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            thread_pool,
+            update_in_thread,
+            messages
+        )
+        return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True) 
+    print("Starting F.L.A.T server in API mode...")
+    uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=True) 
