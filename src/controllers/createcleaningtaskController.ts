@@ -9,7 +9,7 @@ interface CleaningTaskData {
   task_complete: boolean;
 }
 
-export async function createTask(req: Request, res: Response, next?: NextFunction): Promise<void> {
+export async function createCleaningTask(req: Request, res: Response, next?: NextFunction): Promise<void> {
   try {
     const { assigned_to_user, house_id, description, due_date, task_complete }: CleaningTaskData =
       req.body;
