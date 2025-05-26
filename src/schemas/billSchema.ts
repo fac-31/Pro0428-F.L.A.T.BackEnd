@@ -13,4 +13,3 @@ export const BillsSchema = z.object({
   created_at: z.string().optional(),
   active: z.boolean(),
 });
-

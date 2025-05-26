@@ -5,8 +5,7 @@ export const CleaningTaskSchema = z.object({
   assigned_to_user: z.string().uuid().optional(),
   house_id: z.string().uuid().optional(),
   description: z.string(),
-  due_date: z.string().optional(), 
+  due_date: z.string().optional(),
   task_complete: z.boolean().optional(),
-  created_at: z.string().optional(), 
+  created_at: z.string().optional(),
 });
-

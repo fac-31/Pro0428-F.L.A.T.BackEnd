@@ -11,10 +11,7 @@ export async function fetchBills(req: Request, res: Response, next: NextFunction
       return;
     }
 
-    const { data, error } = await supabase
-      .from('Bills')
-      .select('*')
-      .eq('house_id', house_id);
+    const { data, error } = await supabase.from('Bills').select('*').eq('house_id', house_id);
 
     if (error) {
       console.error('❌ Supabase fetch error:', error);
