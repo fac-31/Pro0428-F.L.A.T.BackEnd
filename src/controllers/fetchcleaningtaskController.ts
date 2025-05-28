@@ -1,17 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 import { CleaningTaskSchema } from '../schemas/cleaningtaskSchema.ts';
+import { AuthenticatedRequest } from '../types/authenticatedRequest.ts'
 
 export async function fetchCleaningTasks(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next?: NextFunction
 ): Promise<void> {
   try {
-    const house_id = req.query.house_id as string | undefined;
+    const house_id = req.user.house_id;
 
     if (!house_id) {
-      res.status(400).json({ success: false, message: 'Missing house_id' });
+      res.status(400).json({ success: false, message: 'User has no house_id associated' });
       return;
     }
 
