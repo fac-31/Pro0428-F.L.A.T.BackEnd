@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 import { CleaningTaskSchema } from '../schemas/cleaningtaskSchema.ts';
-import { AuthenticatedRequest } from '../types/authenticatedRequest.ts'
+import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 
 export async function fetchCleaningTasks(
   req: AuthenticatedRequest,

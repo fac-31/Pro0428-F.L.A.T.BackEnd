@@ -5,11 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const loginUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const loginUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email, password } = req.body;
 
   try {
@@ -59,6 +55,6 @@ export const loginUser = async (
     });
   } catch (err) {
     console.error('Login error:', err);
-    next(err); 
+    next(err);
   }
 };

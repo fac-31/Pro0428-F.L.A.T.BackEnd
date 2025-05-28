@@ -1,11 +1,11 @@
 import { Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient';
 import { BillsSchema } from '../schemas/billSchema';
-import { AuthenticatedRequest } from '../types/authenticatedRequest.ts'
+import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 
 export async function fetchBills(
-  req: AuthenticatedRequest, 
-  res: Response, 
+  req: AuthenticatedRequest,
+  res: Response,
   next?: NextFunction
 ): Promise<void> {
   try {
@@ -16,10 +16,7 @@ export async function fetchBills(
       return;
     }
 
-    const { data, error } = await supabase
-      .from('Bills')
-      .select('*')
-      .eq('house_id', house_id);
+    const { data, error } = await supabase.from('Bills').select('*').eq('house_id', house_id);
 
     if (error) {
       console.error('❌ Supabase fetch error:', error);
