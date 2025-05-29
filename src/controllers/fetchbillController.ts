@@ -1,10 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
-import { supabase } from '../config/supabaseClient';
-import { BillsSchema } from '../schemas/billSchema';
+import { Response, NextFunction } from 'express';
+import { supabase } from '../config/supabaseClient.ts';
+import { BillsSchema } from '../schemas/billSchema.ts';
+import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 
-export async function fetchBills(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function fetchBills(
+  req: AuthenticatedRequest,
+  res: Response,
+  next?: NextFunction
+): Promise<void> {
   try {
-    const house_id = req.query.house_id as string | undefined;
+    const house_id = req.user.house_id;
 
     if (!house_id) {
       res.status(400).json({ success: false, message: 'Missing house_id' });

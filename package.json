@@ -15,8 +15,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node --loader ts-node/esm src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:node": "node --loader ts-node/esm src/server.ts",
+    "dev:python": "cd src/python && python server.py",
+    "dev": "concurrently \"npm run dev:node\" \"npm run dev:python\"",
+    "postinstall": "pip install -r requirements.txt",
+    "test": "node --loader ts-node/esm src/test/servers.test.ts",
     "check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint ."
@@ -26,6 +29,7 @@
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.17",
+    "concurrently": "^8.2.2",
     "dotenv": "^16.5.0",
     "eslint": "^9.26.0",
     "globals": "^16.1.0",
@@ -39,8 +43,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "axios": "^1.9.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "zod": "^3.25.28"
   }
 }
