@@ -1,30 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 
-// Get user by ID
-export async function getUserById(req: Request, res: Response, next?: NextFunction): Promise<void> {
-  try {
-    const { id } = req.params;
-
-    const { data, error } = await supabase.from('Users').select('*').eq('id', id).single();
-
-    if (error) {
-      console.error('❌ Supabase insert error:', error);
-      res.status(500).json({ success: false, error: error.message });
-      return;
-    }
-
-    if (!data) {
-      res.status(404).json({ success: false, message: 'User not found' });
-      return;
-    }
-
-    res.status(201).json({ success: true, data });
-  } catch (err) {
-    next?.(err);
-  }
-}
-
 // Create a new user
 export async function createUser(req: Request, res: Response, next?: NextFunction): Promise<void> {
   try {

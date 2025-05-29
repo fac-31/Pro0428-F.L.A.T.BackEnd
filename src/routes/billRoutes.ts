@@ -1,8 +1,10 @@
 import express from 'express';
 const router = express.Router();
 
-import { createBill } from '../controllers/billController.ts';
+import { createBill } from '../controllers/createbillController.ts';
+import { fetchBills } from '../controllers/fetchbillController.ts';
 
-router.get('/create-bill', createBill);
+router.post('/', createBill);
+router.get('/', fetchBills);
 
 export { router as billRoutes };
