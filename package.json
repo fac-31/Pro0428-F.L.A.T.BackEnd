@@ -19,7 +19,7 @@
     "dev:python": "cd src/python && python server.py",
     "dev": "concurrently \"npm run dev:node\" \"npm run dev:python\"",
     "postinstall": "pip install -r requirements.txt",
-    "test": "ts-node src/test/servers.test.ts",
+    "test": "node --loader ts-node/esm src/test/servers.test.ts",
     "check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint ."
