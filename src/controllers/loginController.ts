@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { supabase } from '../config/supabaseClient';
+import { supabase } from '../config/supabaseClient.ts';
 import dotenv from 'dotenv';
 
 dotenv.config();

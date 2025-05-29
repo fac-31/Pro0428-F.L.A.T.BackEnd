@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
-import { supabase } from '../config/supabaseClient';
-import { AuthenticatedRequest } from '../types/authenticatedRequest';
-import { UserSchema } from '../schemas/usersSchema';
+import { supabase } from '../config/supabaseClient.ts';
+import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
+import { UserSchema } from '../schemas/usersSchema.ts';
 
 export async function fetchUserProfile(
   req: AuthenticatedRequest,

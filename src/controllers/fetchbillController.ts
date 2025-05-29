@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
-import { supabase } from '../config/supabaseClient';
-import { BillsSchema } from '../schemas/billSchema';
+import { supabase } from '../config/supabaseClient.ts';
+import { BillsSchema } from '../schemas/billSchema.ts';
 import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 
 export async function fetchBills(
