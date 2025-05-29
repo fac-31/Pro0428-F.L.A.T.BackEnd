@@ -43,4 +43,4 @@ jobs:
               console.error('Error pinging Supabase:', err.message);
               process.exit(1);
             }
-          })(); 
+          })();
