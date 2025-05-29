@@ -1,8 +1,10 @@
 import express from 'express';
 const router = express.Router();
 
-import { createTask } from '../controllers/cleaningController.ts';
+import { createCleaningTask } from '../controllers/createcleaningtaskController.ts';
+import { fetchCleaningTasks } from '../controllers/fetchcleaningtaskController.ts';
 
-router.get('/create-task', createTask);
+router.post('/', createCleaningTask);
+router.get('/', fetchCleaningTasks);
 
 export { router as cleaningRoutes };
