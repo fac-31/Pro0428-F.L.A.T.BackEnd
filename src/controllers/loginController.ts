@@ -24,7 +24,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
 
     // 2. Fetch user profile from your public `users` table
     const { data: userProfile, error: profileError } = await supabase
-      .from('users')
+      .from('Users')
       .select('user_id, house_id')
       .eq('user_id', userId)
       .single();
