@@ -14,7 +14,11 @@ import { testDBRoutes } from './routes/testDBRoutes.ts';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  credentials: true,               
+}));
+
 app.use(express.json());
 
 app.use('/users', userRoutes);
@@ -24,7 +28,7 @@ app.use('/emails', emailRoutes);
 app.use('/contentedness', contentednessRoutes);
 app.use('/cleaning', cleaningRoutes);
 app.use('/bills', billRoutes);
-app.use('/login', loginRoutes);
+app.use('/api', loginRoutes);
 app.use('/api', testDBRoutes);
 
 app.get('/api/hello', (_req, res) => {
