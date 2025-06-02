@@ -56,9 +56,18 @@ house_preferences_history = []
 
 # Function to handle the welcome conversation and get preferences
 def run_welcome_conversation(messages=None):
+    # Initialize with welcome message if no messages exist
+    if not welcome_chat_history:
+        welcome_chat_history.append({
+            "role": "assistant",
+            "content": "Welcome to your new home! I'm here to help make your transition smooth and ensure everyone's preferences are considered. Let's start by discussing your preferences for living together. I'll ask you about different aspects of shared living, and we'll work through them one by one."
+        })
+
     if messages is None:
         # Interactive mode
-        welcome_chat_history.append({"role": "user", "content": "Hi! I'm moving in this week."})
+        if len(welcome_chat_history) == 1:  # Only welcome message exists
+            welcome_chat_history.append({"role": "user", "content": "Hi! I'm moving in this week."})
+        
         while True:
             result = Runner.run_sync(welcome_agent, welcome_chat_history)
             assistant_reply = result.final_output.strip()
@@ -72,9 +81,15 @@ def run_welcome_conversation(messages=None):
             welcome_chat_history.append({"role": "user", "content": user_input})
     else:
         # Server mode
-        welcome_chat_history.extend(messages)
-        result = Runner.run_sync(welcome_agent, welcome_chat_history)
-        return result.final_output.strip()
+        if len(messages) == 1 and messages[0]["role"] == "user":  # Only initial user message
+            welcome_chat_history.extend(messages)
+            result = Runner.run_sync(welcome_agent, welcome_chat_history)
+            return result.final_output.strip()
+        else:
+            # If we have a conversation history, use it
+            welcome_chat_history.extend(messages)
+            result = Runner.run_sync(welcome_agent, welcome_chat_history)
+            return result.final_output.strip()
 
 # Function to update house preferences
 def update_house_preferences(messages=None):
@@ -89,11 +104,9 @@ def update_house_preferences(messages=None):
         # Server mode
         house_preferences_history.extend(messages)
     
-    # Get updated house preferences
     result = Runner.run_sync(house_preferences_agent, house_preferences_history)
     updated_preferences = result.final_output.strip()
     
-    # Store the response in history
     house_preferences_history.append({
         "role": "assistant",
         "content": updated_preferences

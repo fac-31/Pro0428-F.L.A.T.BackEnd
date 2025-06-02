@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import uvicorn
 from user_preferences import run_welcome_conversation, update_house_preferences
 import asyncio
@@ -16,6 +16,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # Create a thread pool for running sync code
@@ -52,7 +53,22 @@ async def welcome_chat(request: ChatRequest):
             run_in_thread,
             messages
         )
-        return {"response": response}
+
+        # Check if the conversation is complete (contains summary or completion indicators)
+        if any(indicator in response.lower() for indicator in ["summary", "all set", "welcome again"]):
+            # Pass the complete conversation to house preferences
+            house_response = await loop.run_in_executor(
+                thread_pool,
+                update_in_thread,
+                messages
+            )
+            return {
+                "response": response,
+                "isComplete": True,
+                "housePreferences": house_response
+            }
+        
+        return {"response": response, "isComplete": False}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -64,21 +80,6 @@ def update_in_thread(messages):
     finally:
         loop.close()
 
-@app.post("/api/preferences")
-async def update_preferences(request: ChatRequest):
-    try:
-        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
-        
-        loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(
-            thread_pool,
-            update_in_thread,
-            messages
-        )
-        return {"response": response}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 if __name__ == "__main__":
     print("Starting F.L.A.T server in API mode...")
-    uvicorn.run("server:app", host="0.0.0.0", port=8001, reload=True) 
+    uvicorn.run("server:app", host="localhost", port=8001, reload=True) 
