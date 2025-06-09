@@ -1,24 +1,70 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
+import { v4 as uuidv4 } from 'uuid';
+import { UserSchema } from '../schemas/usersSchema.ts';
 
 // Create a new user
 export async function createUser(req: Request, res: Response, next?: NextFunction): Promise<void> {
   try {
-    const { name, email, preferences } = req.body;
+    const { name, email, password, preferences } = req.body;
+    
+    // 1. First create the user in Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
+    if (authError) {
+      console.error('❌ Auth error:', authError);
+      res.status(500).json({ success: false, error: authError.message });
+      return;
+    }
+
+    if (!authData.user) {
+      res.status(500).json({ success: false, error: 'User creation failed' });
+      return;
+    }
+
+    // 2. Check if user already exists in database
+    const { data: existingUser, error: checkError } = await supabase
+      .from('Users')
+      .select('user_id')
+      .eq('user_id', authData.user.id)
+      .single();
+
+    if (existingUser) {
+      // User already exists, return success
+      res.status(200).json({ 
+        success: true, 
+        data: existingUser,
+        message: 'User already exists' 
+      });
+      return;
+    }
+
+    // 3. Create new user record if it doesn't exist
     const { data, error } = await supabase
       .from('Users')
-      .insert([{ name, email, preferences }])
+      .insert([{
+        user_id: authData.user.id,
+        name,
+        email,
+        preferences,
+        created_at: new Date().toISOString()
+      }])
       .select();
 
     if (error) {
       console.error('❌ Supabase insert error:', error);
+      // If database insert fails, we should probably delete the auth user
+      await supabase.auth.admin.deleteUser(authData.user.id);
       res.status(500).json({ success: false, error: error.message });
       return;
     }
 
     res.status(201).json({ success: true, data });
   } catch (err) {
+    console.error('Create user error:', err);
     next?.(err);
   }
 }

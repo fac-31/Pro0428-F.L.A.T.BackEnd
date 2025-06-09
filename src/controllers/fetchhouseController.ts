@@ -40,3 +40,33 @@ export async function fetchHouseInfo(
     next(err);
   }
 }
+
+export async function fetchAllHouses(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { data: houses, error } = await supabase
+      .from('Houses')
+      .select('*');
+
+    if (error) {
+      console.error('Fetch houses error:', error);
+      res.status(500).json({ success: false, error: error.message });
+      return;
+    }
+
+    const validation = HouseSchema.array().safeParse(houses);
+
+    if (!validation.success) {
+      console.error('House data validation failed:', validation.error.format());
+      res.status(500).json({ success: false, message: 'House data validation failed' });
+      return;
+    }
+
+    res.status(200).json({ success: true, data: validation.data });
+  } catch (err) {
+    next(err);
+  }
+}

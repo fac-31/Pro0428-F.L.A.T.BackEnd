@@ -23,8 +23,8 @@ app.use(
 
 app.use(express.json());
 
-app.use('/users', userRoutes);
-app.use('api/houses', houseRoutes);
+app.use('/api', userRoutes);
+app.use('/api/houses', houseRoutes);
 app.use('/tenures', tenureRoutes);
 app.use('/emails', emailRoutes);
 app.use('/contentedness', contentednessRoutes);
