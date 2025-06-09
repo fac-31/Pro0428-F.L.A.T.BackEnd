@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
-import { v4 as uuidv4 } from 'uuid';
-import { UserSchema } from '../schemas/usersSchema.ts';
 
 // Create a new user
 export async function createUser(req: Request, res: Response, next?: NextFunction): Promise<void> {
   try {
     const { name, email, password, preferences } = req.body;
-    
+
     // 1. First create the user in Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -26,7 +24,7 @@ export async function createUser(req: Request, res: Response, next?: NextFunctio
     }
 
     // 2. Check if user already exists in database
-    const { data: existingUser, error: checkError } = await supabase
+    const { data: existingUser } = await supabase
       .from('Users')
       .select('user_id')
       .eq('user_id', authData.user.id)
@@ -34,10 +32,10 @@ export async function createUser(req: Request, res: Response, next?: NextFunctio
 
     if (existingUser) {
       // User already exists, return success
-      res.status(200).json({ 
-        success: true, 
+      res.status(200).json({
+        success: true,
         data: existingUser,
-        message: 'User already exists' 
+        message: 'User already exists',
       });
       return;
     }
@@ -45,13 +43,15 @@ export async function createUser(req: Request, res: Response, next?: NextFunctio
     // 3. Create new user record if it doesn't exist
     const { data, error } = await supabase
       .from('Users')
-      .insert([{
-        user_id: authData.user.id,
-        name,
-        email,
-        preferences,
-        created_at: new Date().toISOString()
-      }])
+      .insert([
+        {
+          user_id: authData.user.id,
+          name,
+          email,
+          preferences,
+          created_at: new Date().toISOString(),
+        },
+      ])
       .select();
 
     if (error) {

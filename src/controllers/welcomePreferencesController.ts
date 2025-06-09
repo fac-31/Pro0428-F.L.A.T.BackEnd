@@ -1,16 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 
 interface WelcomePreferencesData {
   user_id: string;
   house_id: string;
-  user_preferences: Record<string, any>;
-  house_preferences: Record<string, any>;
+  user_preferences: Record<string, string | number | boolean>;
+  house_preferences: Record<string, string | number | boolean>;
 }
 
 export async function saveWelcomePreferences(
-  req: AuthenticatedRequest,
+  req: AuthenticatedRequest & { body: WelcomePreferencesData },
   res: Response,
   next?: NextFunction
 ): Promise<void> {

@@ -47,9 +47,7 @@ export async function fetchAllHouses(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { data: houses, error } = await supabase
-      .from('Houses')
-      .select('*');
+    const { data: houses, error } = await supabase.from('Houses').select('*');
 
     if (error) {
       console.error('Fetch houses error:', error);

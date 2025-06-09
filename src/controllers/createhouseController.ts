@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,7 +37,7 @@ export async function createHouse(
           address,
           landlord_contact,
           house_preferences,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         },
       ])
       .select()
@@ -63,12 +63,12 @@ export async function createHouse(
       return;
     }
 
-    res.status(201).json({ 
-      success: true, 
+    res.status(201).json({
+      success: true,
       data: {
         house: houseData,
-        user: userData
-      }
+        user: userData,
+      },
     });
   } catch (err) {
     console.error('Create house error:', err);

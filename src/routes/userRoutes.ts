@@ -10,4 +10,3 @@ router.get('/:id/delete-user', deleteUser);
 router.get('/get-user', fetchUserProfile);
 
 export { router as userRoutes };
-

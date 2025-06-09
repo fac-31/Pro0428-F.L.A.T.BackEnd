@@ -1,3 +1,5 @@
+"""FastAPI server for F.L.A.T application, handling welcome conversations and preference management."""
+
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Any
@@ -6,8 +8,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from user_preferences import run_welcome_conversation, update_house_preferences
-
 import httpx
+import os
+
+EXPRESS_API_URL = os.getenv('EXPRESS_API_URL', 'http://localhost:5000')
 
 app = FastAPI()
 

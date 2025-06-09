@@ -8,8 +8,8 @@ interface ChatMessage {
 }
 
 interface WelcomePreferences {
-  user_preferences: Record<string, any>;
-  house_preferences: Record<string, any>;
+  user_preferences: Record<string, string | number | boolean>;
+  house_preferences: Record<string, string | number | boolean>;
 }
 
 export const pythonService = {
