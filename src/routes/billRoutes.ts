@@ -1,10 +1,11 @@
 import express from 'express';
+import { authenticate } from '../middleware/authenticate.ts';
 const router = express.Router();
 
-import { createBill } from '../controllers/createbillController.ts';
 import { fetchBills } from '../controllers/fetchbillController.ts';
+import { createBill } from '../controllers/createbillController.ts';
 
-router.post('/', createBill);
-router.get('/', fetchBills);
+router.get('/fetch-bill', authenticate, fetchBills);
+router.post('/create-bill', createBill);
 
 export { router as billRoutes };

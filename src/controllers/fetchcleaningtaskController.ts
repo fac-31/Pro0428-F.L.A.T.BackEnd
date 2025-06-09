@@ -12,7 +12,7 @@ export async function fetchCleaningTasks(
     const house_id = req.user.house_id;
 
     if (!house_id) {
-      res.status(400).json({ success: false, message: 'User has no house_id associated' });
+      res.status(400).json({ success: false, message: 'Cleaning Task: Missing house_id' });
       return;
     }
 
@@ -27,7 +27,7 @@ export async function fetchCleaningTasks(
       return;
     }
 
-    const result = CleaningTaskSchema.safeParse(data);
+    const result = CleaningTaskSchema.array().safeParse(data);
 
     if (!result.success) {
       console.error('❌ Data validation error:', result.error.format());
