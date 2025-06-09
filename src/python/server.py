@@ -6,6 +6,7 @@ import uvicorn
 from user_preferences import run_welcome_conversation, update_house_preferences
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+import httpx
 
 app = FastAPI()
 
@@ -28,6 +29,11 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
+
+class SavePreferencesRequest(BaseModel):
+    user_preferences: Dict[str, Any]
+    house_preferences: Dict[str, Any]
+    token: str
 
 @app.get("/api/test")
 async def test_route():
@@ -79,6 +85,25 @@ def update_in_thread(messages):
         return update_house_preferences(messages)
     finally:
         loop.close()
+
+@app.post("/api/save-preferences")
+async def save_preferences(request: SavePreferencesRequest):
+    try:
+        # Forward to Express server
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{EXPRESS_API_URL}/api/welcome/save-preferences",
+                json={
+                    "user_preferences": request.user_preferences,
+                    "house_preferences": request.house_preferences
+                },
+                headers={
+                    "Authorization": f"Bearer {request.token}"  # Pass the auth token
+                }
+            )
+            return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     print("Starting F.L.A.T server in API mode...")

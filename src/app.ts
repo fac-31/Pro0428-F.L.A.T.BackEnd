@@ -9,7 +9,7 @@ import { contentednessRoutes } from './routes/contentednessRoutes.ts';
 import { cleaningRoutes } from './routes/cleaningRoutes.ts';
 import { billRoutes } from './routes/billRoutes.ts';
 import { loginRoutes } from './routes/loginRoutes.ts';
-
+import { welcomeRoutes } from './routes/welcomeRoutes.ts';
 import { testDBRoutes } from './routes/testDBRoutes.ts';
 
 const app = express();
@@ -32,6 +32,7 @@ app.use('/cleaning', cleaningRoutes);
 app.use('/bills', billRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', testDBRoutes);
+app.use('/api', welcomeRoutes);
 
 app.get('/api/hello', (_req, res) => {
   res.json({ message: 'Hello from the backend!' });
