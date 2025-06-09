@@ -29,6 +29,7 @@
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.17",
+    "@types/uuid": "^10.0.0",
     "concurrently": "^8.2.2",
     "dotenv": "^16.5.0",
     "eslint": "^9.26.0",
@@ -47,6 +48,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0",
     "zod": "^3.25.28"
   }
 }

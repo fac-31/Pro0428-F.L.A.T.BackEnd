@@ -1,11 +1,17 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
-import uvicorn
-from user_preferences import run_welcome_conversation, update_house_preferences
+"""FastAPI server for F.L.A.T application, handling welcome conversations and preference management."""
+
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from typing import List, Dict, Any
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+from user_preferences import run_welcome_conversation, update_house_preferences
+import httpx
+import os
+
+EXPRESS_API_URL = os.getenv('EXPRESS_API_URL', 'http://localhost:5000')
 
 app = FastAPI()
 
@@ -28,6 +34,11 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
+
+class SavePreferencesRequest(BaseModel):
+    user_preferences: Dict[str, Any]
+    house_preferences: Dict[str, Any]
+    token: str
 
 @app.get("/api/test")
 async def test_route():
@@ -79,6 +90,25 @@ def update_in_thread(messages):
         return update_house_preferences(messages)
     finally:
         loop.close()
+
+@app.post("/api/save-preferences")
+async def save_preferences(request: SavePreferencesRequest):
+    try:
+        # Forward to Express server
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{EXPRESS_API_URL}/api/welcome/save-preferences",
+                json={
+                    "user_preferences": request.user_preferences,
+                    "house_preferences": request.house_preferences
+                },
+                headers={
+                    "Authorization": f"Bearer {request.token}"  # Pass the auth token
+                }
+            )
+            return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     print("Starting F.L.A.T server in API mode...")
