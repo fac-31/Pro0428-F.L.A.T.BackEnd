@@ -58,3 +58,16 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     next(err);
   }
 };
+
+export const logoutUser = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'Logged out successfully' 
+    });
+  } catch (err) {
+    console.error('Logout error:', err);
+    next(err);
+  }
+};
