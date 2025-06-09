@@ -7,6 +7,11 @@ interface ChatMessage {
   content: string;
 }
 
+interface WelcomePreferences {
+  user_preferences: Record<string, string | number | boolean>;
+  house_preferences: Record<string, string | number | boolean>;
+}
+
 export const pythonService = {
   async welcomeChat(messages: ChatMessage[]) {
     try {
@@ -24,6 +29,20 @@ export const pythonService = {
       return response.data;
     } catch (error) {
       console.error('Error updating preferences:', error);
+      throw error;
+    }
+  },
+
+  async saveWelcomePreferences(preferences: WelcomePreferences, token: string) {
+    try {
+      const response = await axios.post(`${PYTHON_API_URL}/api/save-preferences`, preferences, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error saving welcome preferences:', error);
       throw error;
     }
   },
