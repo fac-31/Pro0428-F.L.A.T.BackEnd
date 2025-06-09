@@ -28,7 +28,7 @@ app.use('api/houses', houseRoutes);
 app.use('/tenures', tenureRoutes);
 app.use('/emails', emailRoutes);
 app.use('/contentedness', contentednessRoutes);
-app.use('/cleaning', cleaningRoutes);
+app.use('/api', cleaningRoutes);
 app.use('/api', billRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', testDBRoutes);
