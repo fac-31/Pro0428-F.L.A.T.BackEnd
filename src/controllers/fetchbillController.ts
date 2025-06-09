@@ -24,7 +24,7 @@ export async function fetchBills(
       return;
     }
 
-    const result = BillsSchema.safeParse(data);
+    const result = BillsSchema.array().safeParse(data);
 
     if (!result.success) {
       console.error('❌ Data validation error:', result.error.format());
