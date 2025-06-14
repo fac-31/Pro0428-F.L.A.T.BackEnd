@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabaseClient.ts';
 import dotenv from 'dotenv';
+import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 
 dotenv.config();
 

@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Create a new user
 export async function createUser(req: Request, res: Response, next?: NextFunction): Promise<void> {
@@ -31,10 +35,20 @@ export async function createUser(req: Request, res: Response, next?: NextFunctio
       .single();
 
     if (existingUser) {
-      // User already exists, return success
+      // User already exists, generate token and return success
+      const token = jwt.sign(
+        {
+          sub: existingUser.user_id,
+          house_id: null, // New users don't have a house yet
+        },
+        process.env.JWT_SECRET!,
+        { expiresIn: '7d' }
+      );
+
       res.status(200).json({
         success: true,
         data: existingUser,
+        token,
         message: 'User already exists',
       });
       return;
@@ -62,7 +76,26 @@ export async function createUser(req: Request, res: Response, next?: NextFunctio
       return;
     }
 
-    res.status(201).json({ success: true, data });
+    // 4. Generate JWT token for the new user
+    const token = jwt.sign(
+      {
+        sub: authData.user.id,
+        house_id: null, // New users don't have a house yet
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    // 5. Return success with token and user data
+    res.status(201).json({ 
+      success: true, 
+      data,
+      token,
+      user: {
+        id: authData.user.id,
+        house_id: null
+      }
+    });
   } catch (err) {
     console.error('Create user error:', err);
     next?.(err);
