@@ -67,16 +67,26 @@ async def welcome_chat(request: ChatRequest):
 
         # Check if the conversation is complete (contains summary or completion indicators)
         if any(indicator in response.lower() for indicator in ["summary", "all set", "welcome again"]):
-            # Pass the complete conversation to house preferences
-            house_response = await loop.run_in_executor(
+            # Get house preferences
+            house_preferences = await loop.run_in_executor(
                 thread_pool,
                 update_in_thread,
                 messages
             )
+            
+            # Log preferences for debugging
+            print("\n=== Preferences Debug Info ===")
+            print("User Preferences (Conversation Summary):")
+            print(response)
+            print("\nHouse Preferences:")
+            print(house_preferences)
+            print("===========================\n")
+            
             return {
                 "response": response,
                 "isComplete": True,
-                "housePreferences": house_response
+                "housePreferences": house_preferences,
+                "userPreferences": {"conversation_summary": response}
             }
         
         return {"response": response, "isComplete": False}

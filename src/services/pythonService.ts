@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8000';
+const PYTHON_API_URL = process.env.PYTHON_API_URL || 'http://localhost:8001';
+const NODE_API_URL = process.env.NODE_API_URL || 'http://localhost:5000';
 
 interface ChatMessage {
   role: string;
@@ -35,7 +36,7 @@ export const pythonService = {
 
   async saveWelcomePreferences(preferences: WelcomePreferences, token: string) {
     try {
-      const response = await axios.post(`${PYTHON_API_URL}/api/save-preferences`, preferences, {
+      const response = await axios.post(`${NODE_API_URL}/api/welcome/save-preferences`, preferences, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
