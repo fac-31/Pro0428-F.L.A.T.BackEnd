@@ -53,4 +53,4 @@ export async function joinHouse(
     console.error('Join house error:', err);
     next?.(err);
   }
-} 
+}

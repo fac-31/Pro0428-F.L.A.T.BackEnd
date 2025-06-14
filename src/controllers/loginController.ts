@@ -92,9 +92,9 @@ export const refreshToken = async (
       .single();
 
     if (profileError || !userProfile) {
-      res.status(404).json({ 
-        success: false, 
-        message: 'User profile not found' 
+      res.status(404).json({
+        success: false,
+        message: 'User profile not found',
       });
       return;
     }
