@@ -11,14 +11,17 @@ from user_preferences import run_welcome_conversation, update_house_preferences
 import httpx
 import os
 
-EXPRESS_API_URL = os.getenv('EXPRESS_API_URL', 'http://localhost:5000')
+EXPRESS_API_URL = os.getenv('EXPRESS_API_URL')
 
 app = FastAPI()
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Add frontend URL when deployed!
+    allow_origins=[
+        "http://localhost:5173",  # Development
+        "https://pro0428-f-l-a-t-frontend.onrender.com"  # Production
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -112,4 +115,11 @@ async def save_preferences(request: SavePreferencesRequest):
 
 if __name__ == "__main__":
     print("Starting F.L.A.T server in API mode...")
-    uvicorn.run("server:app", host="localhost", port=8001, reload=True) 
+    port = int(os.getenv("PORT", 8001))
+    # Disable reload in production and use 0.0.0.0 as host
+    uvicorn.run(
+        "server:app",
+        host="0.0.0.0",  # Changed from localhost to 0.0.0.0
+        port=port,       # Use PORT from environment
+        reload=False     # Disable reload in production
+    ) 

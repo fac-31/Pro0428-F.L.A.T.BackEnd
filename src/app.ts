@@ -16,7 +16,10 @@ const app = express();
 
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: [
+      'http://localhost:5173', // Development
+      'https://pro0428-f-l-a-t-frontend.onrender.com', // Production
+    ],
     credentials: true,
   })
 );

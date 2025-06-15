@@ -12,14 +12,13 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev:node": "node --loader ts-node/esm src/server.ts",
+    "dev:node": "ts-node src/server.ts",
     "dev:python": "cd src/python && python server.py",
     "dev": "concurrently \"npm run dev:node\" \"npm run dev:python\"",
     "postinstall": "pip install -r requirements.txt",
-    "test": "node --loader ts-node/esm src/test/servers.test.ts",
+    "test": "ts-node src/test/servers.test.ts",
     "check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint ."
