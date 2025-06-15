@@ -5,5 +5,5 @@ export const HouseSchema = z.object({
   address: z.string(),
   landlord_contact: z.record(z.any()).nullable(),
   house_preferences: z.record(z.any()).nullable(),
-  created_at: z.string().datetime().nullable(),
+  created_at: z.string().nullable(),
 });
