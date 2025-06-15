@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { supabase } from '../config/supabaseClient.ts';
-import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
+import { supabase } from '../config/supabaseClient';
 import dotenv from 'dotenv';
+import { AuthenticatedRequest } from '../types/authenticatedRequest';
 
 dotenv.config();
 
@@ -72,6 +72,54 @@ export const logoutUser = async (
     });
   } catch (err) {
     console.error('Logout error:', err);
+    next(err);
+  }
+};
+
+export const refreshToken = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.user.id;
+
+    // 1. Fetch current user profile to get latest house_id
+    const { data: userProfile, error: profileError } = await supabase
+      .from('Users')
+      .select('user_id, house_id')
+      .eq('user_id', userId)
+      .single();
+
+    if (profileError || !userProfile) {
+      res.status(404).json({
+        success: false,
+        message: 'User profile not found',
+      });
+      return;
+    }
+
+    // 2. Create new token with updated house_id
+    const token = jwt.sign(
+      {
+        sub: userProfile.user_id,
+        house_id: userProfile.house_id,
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: '7d' }
+    );
+
+    // 3. Return new token and user info
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: userProfile.user_id,
+        house_id: userProfile.house_id,
+      },
+    });
+  } catch (err) {
+    console.error('Token refresh error:', err);
     next(err);
   }
 };

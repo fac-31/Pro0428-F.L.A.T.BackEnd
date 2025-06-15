@@ -27,20 +27,21 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          node -e "
+          node -e '
           (async () => {
             try {
-              const { createClient } = require('@supabase/supabase-js');
+              const { createClient } = require("@supabase/supabase-js");
               const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
               // Query Bills table
-              const { data, error } = await supabase.from('Bills').select('*').limit(1);
+              const { data, error } = await supabase.from("Bills").select("*").limit(1);
 
               if (error) throw error;
 
-              console.log('Ping successful:', data);
+              console.log("Ping successful:", data);
             } catch (err) {
-              console.error('Error pinging Supabase:', err.message);
+              console.error("Error pinging Supabase:", err.message);
               process.exit(1);
             }
           })();
+          '
