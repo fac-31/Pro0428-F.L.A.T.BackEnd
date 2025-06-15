@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import { supabase } from '../config/supabaseClient.ts';
 import { AuthenticatedRequest } from '../types/authenticatedRequest.ts';
 import { HouseSchema } from '../schemas/houseinfoSchema.ts';
+import { extractRulesFromSummary } from '../utils/parsePreferences.ts';
 
 export async function fetchHousePreferences(
   req: AuthenticatedRequest,
@@ -35,7 +36,15 @@ export async function fetchHousePreferences(
       return;
     }
 
-    res.status(200).json({ success: true, data: validation.data });
+    const houseData = validation.data;
+    const summary = houseData.house_preferences?.summary ?? '';
+    const rules = extractRulesFromSummary(summary);
+
+    res.status(200).json({
+      success: true,
+      data: houseData,
+      rules,
+    });
   } catch (err) {
     next(err);
   }
