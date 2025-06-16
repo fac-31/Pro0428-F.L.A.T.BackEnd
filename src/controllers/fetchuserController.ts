@@ -40,3 +40,20 @@ export async function fetchUserProfile(
     next(err);
   }
 }
+
+export async function fetchUserByName(houseId: string, name: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('Users')
+    .select('user_id')
+    .eq('house_id', houseId)
+    .eq('name', name)
+    .single();
+
+  if (error || !data) {
+    console.error('Error retrieving user_id:', error?.message);
+    return null;
+  }
+
+  console.log(data.user_id);
+  return data.user_id;
+}
